@@ -83,7 +83,7 @@ const createBtn = (param) => {
 const createClickListener = () => {
   numBtns.forEach((button) => {
     button.addEventListener("click", () => {
-      if (isZero()) {
+      if (isZero() && !checkDecimal()) {
         currentNum = button.id;
         updateVal(currentNum);
       } else {
@@ -96,13 +96,20 @@ const createClickListener = () => {
 
   otherBtns.forEach((button) => {
     button.addEventListener("click", () => {
-      if (button.id == "0" && isZero()) {
-        updateVal(currentNum);
-      } else if (button.id == "0" && !isZero()) {
-        currentNum += button.id;
-        updateVal(currentNum);
+      if (button.id == "0") {
+        if (isZero() && !checkDecimal()) {
+          updateVal(currentNum);
+        } else if (!isZero()) {
+          currentNum += button.id;
+          updateVal(currentNum);
+        } else if (isZero() && checkDecimal()) {
+          currentNum += button.id;
+          updateVal(currentNum);
+        }
       } else if (button.id == "." && !checkDecimal()) {
         currentNum += button.id;
+        updateVal(currentNum);
+      } else if (button.id == "." && checkDecimal()) {
         updateVal(currentNum);
       }
     });
@@ -116,7 +123,7 @@ const updateVal = (value) => {
 // Checks if the current value is zero
 
 const isZero = () => {
-  if (displayVal.textContent == defaultNum) {
+  if (currentNum == defaultNum) {
     return true;
   } else return false;
 };
