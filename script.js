@@ -1,3 +1,5 @@
+// Variables for easier selection of elements
+
 const numBtnWrapper = document.querySelector("#num-btn-wrapper");
 const otherBtnWrapper = document.querySelector("#other-btn-wrapper");
 const opBtnWrapper = document.querySelector("#operator-btn-wrapper");
@@ -10,10 +12,18 @@ const opBtns = opBtnWrapper.childNodes;
 const clearBtn = document.querySelector("#clear-btn");
 const backBtn = document.querySelector("#back-btn");
 
+displayVal.addEventListener("change", () => {
+  console.log(currentNum);
+});
+// Arrays for button creation
+
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const others = ["+/-", 0, "."];
 
+// Global variables
+
 const defaultNum = 0;
+const maxLength = 10;
 let currentNum;
 let num1;
 let num2;
@@ -27,9 +37,11 @@ document.body.onload = () => {
   currentNum = defaultNum;
 
   clearBtn.addEventListener("click", () => {
-    displayVal.textContent = defaultNum;
+    currentNum = defaultNum;
+    displayVal.textContent = currentNum;
+    console.log(currentNum);
   });
-  
+
   backBtn.addEventListener("click", () => {
     let string = displayVal.textContent;
     if (string.length > 1) {
@@ -43,6 +55,8 @@ document.body.onload = () => {
     console.log(currentNum);
   });
 };
+
+// Creates the number pad buttons and assigns classes & ids
 
 const createBtn = (param) => {
   let wrapper;
@@ -64,32 +78,42 @@ const createBtn = (param) => {
   }
 };
 
+// Creates event listeners for the number pad buttons
+
 const createClickListener = () => {
-  numBtns.forEach((element) => {
-    element.addEventListener("click", () => {
-      updateVal(element.id);
+  numBtns.forEach((button) => {
+    button.addEventListener("click", () => {
       if (isZero()) {
-        displayVal.textContent = element.id;
+        currentNum = button.id;
+        updateVal(currentNum);
       } else {
-        displayVal.textContent += element.id;
+        currentNum += button.id;
+        updateVal(currentNum);
       }
+      console.log(currentNum);
     });
   });
 
-  otherBtns.forEach((element) => {
-    element.addEventListener("click", () => {
-      button = checkButton(element);
-      if (button == "0" && isZero()) {
-        displayVal.textContent = button;
+  otherBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.id == "0" && isZero()) {
+        updateVal(currentNum);
+      } else if (button.id == "0" && !isZero()) {
+        currentNum += button.id;
+        updateVal(currentNum);
+      } else if (button.id == "." && !checkDecimal()) {
+        currentNum += button.id;
+        updateVal(currentNum);
       }
     });
   });
 };
 
-const updateVal = (button) => {
-  if (isNumber(button)) {
-  }
+const updateVal = (value) => {
+  displayVal.textContent = value;
 };
+
+// Checks if the current value is zero
 
 const isZero = () => {
   if (displayVal.textContent == defaultNum) {
@@ -97,21 +121,25 @@ const isZero = () => {
   } else return false;
 };
 
-isNumber = (element) => {
-  if (typeof element == "number") {
+// Checks if the value of a button id is a number to facilitate adding the correct class
+
+const isNumber = (value) => {
+  if (typeof value == "number") {
     return true;
   } else return false;
 };
 
-const checkButton = (element) => {
-  if (element.id == "+/-") {
-    return "+/-";
-  } else if (element.id == "0") {
-    return "0";
+// Checks if the current value already has a decimal point.
+
+const checkDecimal = () => {
+  if (displayVal.textContent.includes(".")) {
+    return true;
   } else {
-    return ".";
+    return false;
   }
 };
+
+// Creates the operator buttons (+  - * / =)
 
 const createOperatorBtn = () => {
   const operators = ["+", "-", "*", "/", "="];
@@ -121,21 +149,21 @@ const createOperatorBtn = () => {
     button.id = operators[i];
     button.type = "button";
     button.textContent = operators[i];
-    if (i == 0) {
+    if (button.id == "+") {
       button.addEventListener("click", () => {
         operator = "add";
         num1 = currentNum;
         displayVal.textContent = defaultNum;
       });
-    } else if (i == 1) {
+    } else if (button.id == "-") {
       button.addEventListener("click", () => {
         operator = "subtract";
       });
-    } else if (i == 2) {
+    } else if (button.id == "*") {
       button.addEventListener("click", () => {
         operator = "multiply";
       });
-    } else if (i == 3) {
+    } else if (button.id == "/") {
       button.addEventListener("click", () => {
         operator = "divide";
       });
