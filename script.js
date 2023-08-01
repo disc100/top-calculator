@@ -12,9 +12,6 @@ const opBtns = opBtnWrapper.childNodes;
 const clearBtn = document.querySelector("#clear-btn");
 const backBtn = document.querySelector("#back-btn");
 
-displayVal.addEventListener("change", () => {
-  console.log(currentNum);
-});
 // Arrays for button creation
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -39,7 +36,6 @@ document.body.onload = () => {
     storedNum = null;
     currentNum = defaultNum;
     displayVal.textContent = currentNum;
-    console.log(currentNum);
   });
 
   backBtn.addEventListener("click", () => {
@@ -52,7 +48,6 @@ document.body.onload = () => {
 
     currentNum = string;
     displayVal.textContent = currentNum;
-    console.log(currentNum);
   });
 };
 
@@ -90,26 +85,32 @@ const createClickListener = () => {
         currentNum += button.id;
         updateVal(currentNum);
       }
-      console.log(currentNum);
     });
   });
 
   otherBtns.forEach((button) => {
     button.addEventListener("click", () => {
       if (button.id == "0") {
-        if (isZero() && !checkDecimal()) {
-          updateVal(currentNum);
-        } else if (!isZero()) {
+        if (!isZero()) {
           currentNum += button.id;
           updateVal(currentNum);
-        } else if (isZero() && checkDecimal()) {
-          currentNum += button.id;
-          updateVal(currentNum);
+        } else if (isZero()) {
+          if (!checkDecimal()) {
+            updateVal(currentNum);
+          } else if (checkDecimal()) {
+            currentNum += button.id;
+            updateVal(currentNum);
+          }
         }
       } else if (button.id == "." && !checkDecimal()) {
-        currentNum += button.id;
-        updateVal(currentNum);
-      } else if (button.id == "." && checkDecimal()) {
+        if (!checkDecimal()) {
+          currentNum += button.id;
+          updateVal(currentNum);
+        } else if (checkDecimal()) {
+          updateVal(currentNum);
+        }
+      } else if (button.id == "+/-") {
+        currentNum *= -1;
         updateVal(currentNum);
       }
     });
@@ -158,31 +159,23 @@ const createOperatorBtn = () => {
     button.textContent = operators[i];
     if (button.id == "+") {
       button.addEventListener("click", () => {
-        storeValue();
-        updateVal(currentNum);
-        operator = "add";
+        add();
       });
     } else if (button.id == "-") {
       button.addEventListener("click", () => {
-        storeValue();
-        updateVal(currentNum);
-        operator = "subtract";
+        subtract();
       });
     } else if (button.id == "*") {
       button.addEventListener("click", () => {
-        storeValue();
-        updateVal(currentNum);
-        operator = "multiply";
+        multiply();
       });
     } else if (button.id == "/") {
       button.addEventListener("click", () => {
-        storeValue();
-        updateVal(currentNum);
-        operator = "divide";
+        divide();
       });
     } else {
       button.addEventListener("click", () => {
-        operate(operator, storedNum, currentNum);
+        operate();
       });
     }
     opBtnWrapper.appendChild(button);
@@ -196,15 +189,35 @@ const storeValue = () => {
   currentNum = defaultNum;
 };
 
-const add = () => {};
+const add = () => {
+  if (storedNum != null) {
+    operate();
+  } else {
+    storeValue();
+    updateVal(currentNum);
+  }
+  operator = "add";
+};
 
-const subtract = () => {};
+const subtract = () => {
+  storeValue();
+  updateVal(currentNum);
+  operator = "subtract";
+};
 
-const multiply = () => {};
+const multiply = () => {
+  storeValue();
+  updateVal(currentNum);
+  operator = "multiply";
+};
 
-const divide = () => {};
+const divide = () => {
+  storeValue();
+  updateVal(currentNum);
+  operator = "divide";
+};
 
-const operate = (operator, storedNum, currentNum) => {
+const operate = () => {
   let result;
   storedNum = parseInt(storedNum);
   currentNum = parseInt(currentNum);
@@ -215,12 +228,13 @@ const operate = (operator, storedNum, currentNum) => {
   } else if (operator == "multiply") {
     result = storedNum * currentNum;
   } else if (operator == "divide") {
-    result = storedNum / currentNum;
+    if (currentNum == 0) {
+      result = "Why?";
+    } else {
+      result = storedNum / currentNum;
+    }
   }
   updateVal(result);
   storedNum = result;
   currentNum = result;
-  console.log(operator);
-  console.log("current", currentNum);
-  console.log("stored", storedNum);
 };
