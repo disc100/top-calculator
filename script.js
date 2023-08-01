@@ -25,8 +25,7 @@ const others = ["+/-", 0, "."];
 const defaultNum = 0;
 const maxLength = 10;
 let currentNum;
-let num1;
-let num2;
+let storedNum;
 
 document.body.onload = () => {
   createBtn(numbers);
@@ -37,6 +36,7 @@ document.body.onload = () => {
   currentNum = defaultNum;
 
   clearBtn.addEventListener("click", () => {
+    storedNum = null;
     currentNum = defaultNum;
     displayVal.textContent = currentNum;
     console.log(currentNum);
@@ -158,29 +158,42 @@ const createOperatorBtn = () => {
     button.textContent = operators[i];
     if (button.id == "+") {
       button.addEventListener("click", () => {
+        storeValue();
+        updateVal(currentNum);
         operator = "add";
-        num1 = currentNum;
-        displayVal.textContent = defaultNum;
       });
     } else if (button.id == "-") {
       button.addEventListener("click", () => {
+        storeValue();
+        updateVal(currentNum);
         operator = "subtract";
       });
     } else if (button.id == "*") {
       button.addEventListener("click", () => {
+        storeValue();
+        updateVal(currentNum);
         operator = "multiply";
       });
     } else if (button.id == "/") {
       button.addEventListener("click", () => {
+        storeValue();
+        updateVal(currentNum);
         operator = "divide";
       });
     } else {
       button.addEventListener("click", () => {
-        operate(operator, num1, num2);
+        operate(operator, storedNum, currentNum);
       });
     }
     opBtnWrapper.appendChild(button);
   }
+};
+
+const storeValue = () => {
+  if (storedNum == null) {
+    storedNum = currentNum;
+  }
+  currentNum = defaultNum;
 };
 
 const add = () => {};
@@ -191,4 +204,23 @@ const multiply = () => {};
 
 const divide = () => {};
 
-const operate = (operator, num1, num2) => {};
+const operate = (operator, storedNum, currentNum) => {
+  let result;
+  storedNum = parseInt(storedNum);
+  currentNum = parseInt(currentNum);
+  if (operator == "add") {
+    result = (storedNum + currentNum).toString();
+  } else if (operator == "subtract") {
+    result = storedNum - currentNum;
+  } else if (operator == "multiply") {
+    result = storedNum * currentNum;
+  } else if (operator == "divide") {
+    result = storedNum / currentNum;
+  }
+  updateVal(result);
+  storedNum = result;
+  currentNum = result;
+  console.log(operator);
+  console.log("current", currentNum);
+  console.log("stored", storedNum);
+};
