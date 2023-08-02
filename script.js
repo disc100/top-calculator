@@ -78,6 +78,9 @@ const createBtn = (param) => {
 const createClickListener = () => {
   numBtns.forEach((button) => {
     button.addEventListener("click", () => {
+      if (displayVal.textContent.length == 10) {
+        return;
+      }
       if (isZero() && !checkDecimal()) {
         currentNum = button.id;
         updateVal(currentNum);
@@ -85,11 +88,16 @@ const createClickListener = () => {
         currentNum += button.id;
         updateVal(currentNum);
       }
+      console.log(currentNum);
     });
   });
 
   otherBtns.forEach((button) => {
     button.addEventListener("click", () => {
+      if (displayVal.textContent.length == 10) {
+        return;
+      }
+
       if (button.id == "0") {
         if (!isZero()) {
           currentNum += button.id;
@@ -183,46 +191,60 @@ const createOperatorBtn = () => {
 };
 
 const storeValue = () => {
-  if (storedNum == null) {
-    storedNum = currentNum;
-  }
+  storedNum = currentNum;
   currentNum = defaultNum;
 };
 
 const add = () => {
+  operator = "add";
   if (storedNum != null) {
+    operate();
+    storeValue();
+  } else {
+    storeValue();
+    updateVal(currentNum);
+  }
+};
+
+const subtract = () => {
+  operator = "subtract";
+  if (storedNum != null) {
+    storeValue();
     operate();
   } else {
     storeValue();
     updateVal(currentNum);
   }
-  operator = "add";
-};
-
-const subtract = () => {
-  storeValue();
-  updateVal(currentNum);
-  operator = "subtract";
 };
 
 const multiply = () => {
-  storeValue();
-  updateVal(currentNum);
   operator = "multiply";
+  if (storedNum != null) {
+    storeValue();
+    operate();
+  } else {
+    storeValue();
+    updateVal(currentNum);
+  }
 };
 
 const divide = () => {
-  storeValue();
-  updateVal(currentNum);
   operator = "divide";
+  if (storedNum != null) {
+    storeValue();
+    operate();
+  } else {
+    storeValue();
+    updateVal(currentNum);
+  }
 };
 
 const operate = () => {
   let result;
-  storedNum = parseInt(storedNum);
-  currentNum = parseInt(currentNum);
+  storedNum = parseFloat(storedNum);
+  currentNum = parseFloat(currentNum);
   if (operator == "add") {
-    result = (storedNum + currentNum).toString();
+    result = storedNum + currentNum;
   } else if (operator == "subtract") {
     result = storedNum - currentNum;
   } else if (operator == "multiply") {
@@ -234,6 +256,7 @@ const operate = () => {
       result = storedNum / currentNum;
     }
   }
+  result.toString();
   updateVal(result);
   storedNum = result;
   currentNum = result;
