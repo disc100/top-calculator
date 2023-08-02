@@ -23,6 +23,7 @@ const defaultNum = 0;
 const maxLength = 10;
 let currentNum;
 let storedNum;
+let lastPress;
 
 document.body.onload = () => {
   createBtn(numbers);
@@ -33,6 +34,7 @@ document.body.onload = () => {
   currentNum = defaultNum;
 
   clearBtn.addEventListener("click", () => {
+    lastPress = null;
     storedNum = null;
     currentNum = defaultNum;
     displayVal.textContent = currentNum;
@@ -78,6 +80,10 @@ const createBtn = (param) => {
 const createClickListener = () => {
   numBtns.forEach((button) => {
     button.addEventListener("click", () => {
+      if (lastPress == "=") {
+        currentNum = 0;
+        lastPress = button.id;
+      }
       if (displayVal.textContent.length == 10) {
         return;
       }
@@ -88,12 +94,13 @@ const createClickListener = () => {
         currentNum += button.id;
         updateVal(currentNum);
       }
-      console.log(currentNum);
     });
   });
 
   otherBtns.forEach((button) => {
     button.addEventListener("click", () => {
+      lastPress = button.id;
+
       if (displayVal.textContent.length == 10) {
         return;
       }
@@ -168,6 +175,7 @@ const createOperatorBtn = () => {
     if (button.id == "+") {
       button.addEventListener("click", () => {
         add();
+        lastPress = button.id;
       });
     } else if (button.id == "-") {
       button.addEventListener("click", () => {
@@ -176,14 +184,17 @@ const createOperatorBtn = () => {
     } else if (button.id == "*") {
       button.addEventListener("click", () => {
         multiply();
+        lastPress = button.id;
       });
     } else if (button.id == "/") {
       button.addEventListener("click", () => {
         divide();
+        lastPress = button.id;
       });
     } else {
       button.addEventListener("click", () => {
         operate();
+        lastPress = button.id;
       });
     }
     opBtnWrapper.appendChild(button);
@@ -196,7 +207,6 @@ const storeValue = () => {
 };
 
 const add = () => {
-  operator = "add";
   if (storedNum != null) {
     operate();
     storeValue();
@@ -204,39 +214,40 @@ const add = () => {
     storeValue();
     updateVal(currentNum);
   }
+  operator = "add";
 };
 
 const subtract = () => {
-  operator = "subtract";
   if (storedNum != null) {
-    storeValue();
     operate();
+    storeValue();
   } else {
     storeValue();
     updateVal(currentNum);
   }
+  operator = "subtract";
 };
 
 const multiply = () => {
-  operator = "multiply";
   if (storedNum != null) {
-    storeValue();
     operate();
+    storeValue();
   } else {
     storeValue();
     updateVal(currentNum);
   }
+  operator = "multiply";
 };
 
 const divide = () => {
-  operator = "divide";
   if (storedNum != null) {
-    storeValue();
     operate();
+    storeValue();
   } else {
     storeValue();
     updateVal(currentNum);
   }
+  operator = "divide";
 };
 
 const operate = () => {
@@ -256,8 +267,19 @@ const operate = () => {
       result = storedNum / currentNum;
     }
   }
-  result.toString();
+
+  if (result > 9999999999) {
+    result = parseFloat(result.toExponential());
+  }
+
+  if (Number.isInteger(result)) {
+    result = result.toPrecision(6);
+  } else {
+    result = parseFloat(result.toPrecision(10));
+    result = result.toFixed(3);
+  }
+
   updateVal(result);
-  storedNum = result;
+  storedNum = null;
   currentNum = result;
 };
